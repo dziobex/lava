@@ -1,10 +1,8 @@
 package org.maze;
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -16,37 +14,42 @@ public class MainWindow extends JFrame {
     private JPanel mainPanel;
     MazePanel mazePanel;
     private JScrollPane mazeScrollPane;
+    private JButton solveButton;
+    private JButton setStartButton;
+    private JButton setEndButton;
+    private JButton removeButton;
+    private JLabel fillingLabel;
     public static MazeLoader loader = null;
 
     public MainWindow() {
-        setTitle("Lava - main window");
-        menuBarSetup();
+        setTitle("Lava - LAbirynth in jaVA");
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+
         setSize(800, 600);
+        setContentPane(mainPanel);
 
-        System.out.println(loader);
-
+        menuBarSetup();
         updateMaze();
 
+        setResizable(false);
         setVisible(true);
+        removeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mazePanel = null;
+                mazeScrollPane.setViewportView(fillingLabel);
+            }
+        });
     }
 
     void updateMaze() {
-        System.out.println("A");
         if ( loader == null || loader.GetMaze() == null )
             return;
-        System.out.println("B");
-
-        if ( mazeScrollPane != null)
-            this.remove(mazeScrollPane);
-
         mazePanel = new MazePanel(loader.GetMaze());
-        mazeScrollPane = new JScrollPane(mazePanel);
+        mazeScrollPane.setViewportView(mazePanel);
         mazeScrollPane.setPreferredSize(mazePanel.getPreferredSize());
-
-        this.add(mazeScrollPane);
     }
 
     void menuBarSetup() {

@@ -40,7 +40,8 @@ public class MazeLoader {
         int[][] mazeData = new int[2050][2050];
         for ( int y = 0; y < height; ++y ) {
             for ( int x = 0; x < width; ++x ) {
-                mazeData[y][x] = lines.get(y).charAt(x) == ' ' ? 0 : 1;
+                char getChar = lines.get(y).charAt(x);
+                mazeData[y][x] = getChar == ' ' ? 0 : getChar == 'P' ? 2 : getChar == 'K' ? 3 : 1;
             }
         }
 
