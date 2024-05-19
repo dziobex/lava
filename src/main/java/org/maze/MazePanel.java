@@ -15,13 +15,14 @@ public class MazePanel extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
+        System.out.println("h");
         super.paintComponent(g);
         drawMaze(g);
     }
 
     private void drawMaze(Graphics g) {
-        for (int x = 0; x < maze.getWidth(); ++x) {
-            for (int y = 0; y < maze.getHeight(); ++y) {
+        for (int x = 0; x < maze.getHeight(); ++x) {
+            for (int y = 0; y < maze.getWidth(); ++y) {
                 g.setColor(maze.getCell(x, y) == 1 ? Color.BLACK : Color.WHITE);
                 g.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
                 g.setColor(Color.GRAY);

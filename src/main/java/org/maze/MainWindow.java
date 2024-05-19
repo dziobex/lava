@@ -14,47 +14,39 @@ public class MainWindow extends JFrame {
     JMenuItem openTextItem, openBinaryItem;
     JMenuItem saveTextItem, saveBinaryItem, saveImageItem;
     private JPanel mainPanel;
+    MazePanel mazePanel;
     private JScrollPane mazeScrollPane;
+    public static MazeLoader loader = null;
 
     public MainWindow() {
         setTitle("Lava - main window");
         menuBarSetup();
 
-        int[][] mazeData = {
-                {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-                {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1},
-                {1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1},
-                {1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1},
-                {1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                {1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
-                {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1},
-                {1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1},
-                {1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1},
-                {1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1},
-                {1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1},
-                {1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1},
-                {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1},
-                {1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1},
-                {1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1},
-                {1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1},
-                {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1},
-                {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-                {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-        };
-
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setSize(800, 600);
 
-        Maze maze = new Maze(mazeData, 20, 20);
-        MazePanel mazePanel = new MazePanel(maze);
+        System.out.println(loader);
 
-        mazeScrollPane = new JScrollPane(mazePanel);
-        mazeScrollPane.setPreferredSize(mazePanel.getPreferredSize());
-        getContentPane().add(mazeScrollPane);
+        updateMaze();
 
         setVisible(true);
+    }
+
+    void updateMaze() {
+        System.out.println("A");
+        if ( loader == null || loader.GetMaze() == null )
+            return;
+        System.out.println("B");
+
+        if ( mazeScrollPane != null)
+            this.remove(mazeScrollPane);
+
+        mazePanel = new MazePanel(loader.GetMaze());
+        mazeScrollPane = new JScrollPane(mazePanel);
+        mazeScrollPane.setPreferredSize(mazePanel.getPreferredSize());
+
+        this.add(mazeScrollPane);
     }
 
     void menuBarSetup() {
@@ -77,6 +69,7 @@ public class MainWindow extends JFrame {
         bar.add(saveItem);
 
         openTextItem.addActionListener(new ActionListener() {
+
             public void actionPerformed(ActionEvent ae) {
                 JFileChooser fileChooser = new JFileChooser();
 
@@ -91,7 +84,7 @@ public class MainWindow extends JFrame {
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
 
-                    MazeLoader loader = new MazeLoader();
+                    loader = new MazeLoader();
                     MazeLoader.LoadResult loadResult = loader.LoadText(selectedFile);
 
                     switch (loadResult) {
@@ -104,18 +97,13 @@ public class MainWindow extends JFrame {
                         default: return;
                     }
 
-                    // show it
-                    MazePanel mazePanel = new MazePanel(loader.GetMaze());
-                    mazeScrollPane = new JScrollPane(mazePanel);
-                    mazeScrollPane.setPreferredSize(mazePanel.getPreferredSize());
-                    getContentPane().add(mazeScrollPane);
-
-                    setVisible(true);
-
+                    updateMaze();
                 }
             }
         });
 
         setJMenuBar(bar);
     }
+
+
 }
