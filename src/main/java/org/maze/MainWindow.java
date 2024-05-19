@@ -1,5 +1,6 @@
 package org.maze;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -21,9 +22,14 @@ public class MainWindow extends JFrame {
     private JLabel fillingLabel;
     public static MazeLoader loader = null;
 
+    boolean setStart, setEnd;
+
     public MainWindow() {
+        this.setStart = this.setEnd = false;
+
         setTitle("Lava - LAbirynth in jaVA");
 
+        setIconImage(new ImageIcon("./assets/favicon.png").getImage());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -31,15 +37,33 @@ public class MainWindow extends JFrame {
         setContentPane(mainPanel);
 
         menuBarSetup();
+        toolPanelSetup();
         updateMaze();
 
         setResizable(false);
         setVisible(true);
-        removeButton.addActionListener(new ActionListener() {
+
+        setStartButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                mazePanel = null;
-                mazeScrollPane.setViewportView(fillingLabel);
+                setStart = !setStart;
+                if ( setEnd && setStart ) {
+                    setEnd = false;
+                    setEndButton.setBackground(Color.WHITE);
+                }
+                setStartButton.setBackground(setStart ? Color.GRAY : Color.WHITE);
+            }
+        });
+
+        setEndButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setEnd = !setEnd;
+                if ( setStart && setEnd ) {
+                    setStart = false;
+                    setStartButton.setBackground(Color.WHITE);
+                }
+                setEndButton.setBackground(setEnd ? Color.GRAY : Color.WHITE);
             }
         });
     }
@@ -54,18 +78,33 @@ public class MainWindow extends JFrame {
 
     void menuBarSetup() {
         bar = new JMenuBar();
+        bar.setFont(solveButton.getFont());
 
         openItem = new JMenu("Open From");
+        openItem.setFont(solveButton.getFont());
+
         openTextItem = new JMenuItem("text");
+        openTextItem.setFont(solveButton.getFont());
+
         openBinaryItem = new JMenuItem("binary");
+        openBinaryItem.setFont(solveButton.getFont());
+
         openItem.add(openTextItem);
         openItem.add(openBinaryItem);
         bar.add(openItem);
 
         saveItem = new JMenu("Save As");
+        saveItem.setFont(solveButton.getFont());
+
         saveTextItem = new JMenuItem("text");
+        saveTextItem.setFont(solveButton.getFont());
+
         saveBinaryItem = new JMenuItem("binary");
+        saveBinaryItem.setFont(solveButton.getFont());
+
         saveImageItem = new JMenuItem("image");
+        saveImageItem.setFont(solveButton.getFont());
+
         saveItem.add(saveTextItem);
         saveItem.add(saveBinaryItem);
         saveItem.add(saveImageItem);
@@ -108,5 +147,24 @@ public class MainWindow extends JFrame {
         setJMenuBar(bar);
     }
 
-
+    void toolPanelSetup() {
+        solveButton.setIcon(new ImageIcon("./assets/solvebtn.png"));
+        setStartButton.setIcon(new ImageIcon("./assets/startbtn.png"));
+        setEndButton.setIcon(new ImageIcon("./assets/endbtn.png"));
+        removeButton.setIcon(new ImageIcon("./assets/removebtn.png"));
+        removeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if ( mazePanel == null ) return;
+                if ( JOptionPane.showConfirmDialog(
+                        null,
+                        "The maze will be removed. Are you sure?",
+                        "Bye bye?",
+                        JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION ) {
+                    mazePanel = null;
+                    mazeScrollPane.setViewportView(fillingLabel);
+                }
+            }
+        });
+    }
 }

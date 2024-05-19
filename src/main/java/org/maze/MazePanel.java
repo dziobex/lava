@@ -12,6 +12,8 @@ public class MazePanel extends JPanel {
         this.maze = maze;
         setLayout(new BorderLayout());
         createSnapshot();
+
+
     }
 
     void createSnapshot() {
