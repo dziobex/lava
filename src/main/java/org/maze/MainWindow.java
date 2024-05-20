@@ -18,6 +18,7 @@ public class MainWindow extends JFrame {
     private JScrollPane mazeScrollPane;
     private JButton solveButton, setStartButton, setEndButton, removeButton;
     private JLabel fillingLabel;
+    private JButton clearSolutionButton;
     public static MazeLoader loader = null;
 
     boolean setStart, setEnd;
@@ -62,6 +63,20 @@ public class MainWindow extends JFrame {
             }
         });
 
+        solveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mazePanel.getMaze().solveMaze();
+                mazePanel.refresh();
+            }
+        });
+        clearSolutionButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mazePanel.getMaze().clearPath();
+                mazePanel.refresh();
+            }
+        });
     }
 
     void updateMaze() {
@@ -161,6 +176,7 @@ public class MainWindow extends JFrame {
                             break;
                         case BAD_DIMS:
                             System.out.println("Złe wymiary!");
+                            JOptionPane.showMessageDialog(null, "Złe wymiary labiryntu!", "O nie!", JOptionPane.WARNING_MESSAGE);
                             break;
                         default: return;
                     }
@@ -177,6 +193,7 @@ public class MainWindow extends JFrame {
         solveButton.setIcon(new ImageIcon("./assets/solvebtn.png"));
         setStartButton.setIcon(new ImageIcon("./assets/startbtn.png"));
         setEndButton.setIcon(new ImageIcon("./assets/endbtn.png"));
+        clearSolutionButton.setIcon(new ImageIcon("./assets/clearbtn.png"));
         removeButton.setIcon(new ImageIcon("./assets/removebtn.png"));
 
         removeButton.addActionListener(new ActionListener() {

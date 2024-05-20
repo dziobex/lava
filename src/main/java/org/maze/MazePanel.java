@@ -12,11 +12,19 @@ public class MazePanel extends JPanel {
 
     public MazePanel(Maze maze) {
         this.maze = maze;
+
+        // adjust the cell size
+        cellSize = 10;
+        while ( this.maze.getWidth() * (cellSize + 1) <= 600 && this.maze.getHeight() * (cellSize + 1) <= 535) {
+            ++cellSize;
+        }
+
         setLayout(new BorderLayout());
         createSnapshot();
     }
 
     void createSnapshot() {
+
         int width = maze.getHeight() * cellSize,
             height = maze.getWidth() * cellSize;
 
@@ -26,6 +34,11 @@ public class MazePanel extends JPanel {
         Graphics2D g2d = mazeImage.createGraphics();
         drawMaze(g2d);
         g2d.dispose();
+    }
+
+    public void refresh() {
+        createSnapshot();
+        repaint();
     }
 
     private void drawMaze(Graphics g) {
@@ -38,8 +51,9 @@ public class MazePanel extends JPanel {
                 } else if ( maze.getEndLocation().x == x && maze.getEndLocation().y == y ) {
                     g.setColor(Color.red);
                 } else {
-                    g.setColor(cell == 1 ? Color.BLACK : Color.WHITE);
+                    g.setColor(cell == 1 ? Color.BLACK : cell == 3 ? Color.ORANGE : Color.WHITE);
                 }
+
                 g.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
                 g.setColor(Color.GRAY);
                 g.drawRect(x * cellSize, y * cellSize, cellSize, cellSize);
@@ -60,14 +74,44 @@ public class MazePanel extends JPanel {
     }
 
     public void setStartLocation(Point xypos) {
+
+        Graphics2D g2d = mazeImage.createGraphics();
+
+        //replace
+        int cell = maze.getCell(maze.getStartLocation().x, maze.getStartLocation().y);
+        g2d.setColor(cell == 0 ? Color.white : Color.BLACK);
+        g2d.fillRect(maze.getStartLocation().x * cellSize, maze.getStartLocation().y * cellSize, cellSize, cellSize);
+        g2d.setColor(Color.GRAY);
+        g2d.drawRect(maze.getStartLocation().x * cellSize, maze.getStartLocation().y * cellSize, cellSize, cellSize);
+
+        g2d.setColor(Color.green);
+        g2d.fillRect(xypos.x * cellSize, xypos.y * cellSize, cellSize, cellSize);
+        g2d.setColor(Color.GRAY);
+        g2d.drawRect(xypos.x * cellSize, xypos.y * cellSize, cellSize, cellSize);
+        g2d.dispose();
+
         maze.setStartLocation(xypos);
-        createSnapshot();
         repaint();
     }
 
     public void setEndLocation(Point xypos) {
+
+        Graphics2D g2d = mazeImage.createGraphics();
+
+        // replace
+        int cell = maze.getCell(maze.getEndLocation().x, maze.getEndLocation().y);
+        g2d.setColor(cell == 0 ? Color.white : Color.BLACK);
+        g2d.fillRect(maze.getEndLocation().x * cellSize, maze.getEndLocation().y * cellSize, cellSize, cellSize);
+        g2d.setColor(Color.GRAY);
+        g2d.drawRect(maze.getEndLocation().x * cellSize, maze.getEndLocation().y * cellSize, cellSize, cellSize);
+
+        g2d.setColor(Color.RED);
+        g2d.fillRect(xypos.x * cellSize, xypos.y * cellSize, cellSize, cellSize);
+        g2d.setColor(Color.GRAY);
+        g2d.drawRect(xypos.x * cellSize, xypos.y * cellSize, cellSize, cellSize);
+        g2d.dispose();
+
         maze.setEndLocation(xypos);
-        createSnapshot();
         repaint();
     }
 
