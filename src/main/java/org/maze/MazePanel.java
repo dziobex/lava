@@ -1,19 +1,19 @@
 package org.maze;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
 public class MazePanel extends JPanel {
     private Maze maze;
     private BufferedImage mazeImage;
-    private static int cellSize = 10;
+    public static int cellSize = 10;
 
     public MazePanel(Maze maze) {
         this.maze = maze;
         setLayout(new BorderLayout());
         createSnapshot();
-
-
     }
 
     void createSnapshot() {
@@ -28,19 +28,18 @@ public class MazePanel extends JPanel {
         g2d.dispose();
     }
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        if (mazeImage != null)
-            g.drawImage(mazeImage, 0, 0, this);
-    }
-
     private void drawMaze(Graphics g) {
-        for (int x = 0; x < maze.getHeight(); ++x) {
-            for (int y = 0; y < maze.getWidth(); ++y) {
+        for (int y = 0; y < maze.getHeight(); ++y) {
+            for (int x = 0; x < maze.getWidth(); ++x) {
                 int cell = maze.getCell(x, y);
 
-                g.setColor(cell == 1 ? Color.BLACK : cell == 2 ? Color.GREEN : cell == 3 ? Color.RED : Color.WHITE);
+                if ( maze.getStartLocation().x == x && maze.getStartLocation().y == y ) {
+                    g.setColor(Color.green);
+                } else if ( maze.getEndLocation().x == x && maze.getEndLocation().y == y ) {
+                    g.setColor(Color.red);
+                } else {
+                    g.setColor(cell == 1 ? Color.BLACK : Color.WHITE);
+                }
                 g.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
                 g.setColor(Color.GRAY);
                 g.drawRect(x * cellSize, y * cellSize, cellSize, cellSize);
@@ -49,7 +48,28 @@ public class MazePanel extends JPanel {
     }
 
     @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (mazeImage != null)
+            g.drawImage(mazeImage, 0, 0, this);
+    }
+
+    @Override
     public Dimension getPreferredSize() {
         return new Dimension(maze.getHeight() * cellSize, maze.getWidth() * cellSize);
     }
+
+    public void setStartLocation(Point xypos) {
+        maze.setStartLocation(xypos);
+        createSnapshot();
+        repaint();
+    }
+
+    public void setEndLocation(Point xypos) {
+        maze.setEndLocation(xypos);
+        createSnapshot();
+        repaint();
+    }
+
+    public Maze getMaze() { return this.maze; }
 }

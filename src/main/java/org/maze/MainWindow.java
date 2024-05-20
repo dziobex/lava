@@ -3,22 +3,20 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class MainWindow extends JFrame {
-    JMenuBar bar;
-    JMenu openItem, saveItem;
-    JMenuItem openTextItem, openBinaryItem;
-    JMenuItem saveTextItem, saveBinaryItem, saveImageItem;
+    private JMenuBar bar;
+    private JMenu openItem, saveItem;
+    private JMenuItem openTextItem, openBinaryItem, saveTextItem, saveBinaryItem, saveImageItem;
     private JPanel mainPanel;
-    MazePanel mazePanel;
+    private MazePanel mazePanel;
     private JScrollPane mazeScrollPane;
-    private JButton solveButton;
-    private JButton setStartButton;
-    private JButton setEndButton;
-    private JButton removeButton;
+    private JButton solveButton, setStartButton, setEndButton, removeButton;
     private JLabel fillingLabel;
     public static MazeLoader loader = null;
 
@@ -28,20 +26,17 @@ public class MainWindow extends JFrame {
         this.setStart = this.setEnd = false;
 
         setTitle("Lava - LAbirynth in jaVA");
-
         setIconImage(new ImageIcon("./assets/favicon.png").getImage());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-
         setSize(800, 600);
         setContentPane(mainPanel);
+        setResizable(false);
+        setVisible(true);
 
         menuBarSetup();
         toolPanelSetup();
         updateMaze();
-
-        setResizable(false);
-        setVisible(true);
 
         setStartButton.addActionListener(new ActionListener() {
             @Override
@@ -66,6 +61,7 @@ public class MainWindow extends JFrame {
                 setEndButton.setBackground(setEnd ? Color.GRAY : Color.WHITE);
             }
         });
+
     }
 
     void updateMaze() {
@@ -74,6 +70,36 @@ public class MainWindow extends JFrame {
         mazePanel = new MazePanel(loader.GetMaze());
         mazeScrollPane.setViewportView(mazePanel);
         mazeScrollPane.setPreferredSize(mazePanel.getPreferredSize());
+        mazePanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                // get the location on the screen
+                // and transform it into the location on the jpanel
+                Point location = MouseInfo.getPointerInfo().getLocation();
+                SwingUtilities.convertPointFromScreen(location, mazePanel);
+
+                Point xypos = new Point(location.x / mazePanel.cellSize, location.y / mazePanel.cellSize);
+
+                //System.out.println(String.format("%s: x is %d and y is %d", location, xypos.x, xypos.y));
+
+                if ( setStart && xypos.x < mazePanel.getMaze().getWidth() && xypos.y < mazePanel.getMaze().getHeight()
+                        && (mazePanel.getMaze().getEndLocation() == null ||
+                        (mazePanel.getMaze().getEndLocation().x != xypos.x
+                        || mazePanel.getMaze().getEndLocation().y != xypos.y))) {
+
+                    System.out.println("New start");
+                    mazePanel.setStartLocation(xypos);
+                }
+                else if ( setEnd && xypos.x < mazePanel.getMaze().getWidth() && xypos.y < mazePanel.getMaze().getHeight()
+                        && (mazePanel.getMaze().getStartLocation() == null ||
+                        (mazePanel.getMaze().getStartLocation().x != xypos.x
+                                || mazePanel.getMaze().getStartLocation().y != xypos.y))) {
+
+                    System.out.println("New end");
+                    mazePanel.setEndLocation(xypos);
+                }
+            }
+        });
     }
 
     void menuBarSetup() {
@@ -131,7 +157,7 @@ public class MainWindow extends JFrame {
 
                     switch (loadResult) {
                         case SUCCESS:
-                            System.out.println("Udało się załadować labirynt");
+                            System.out.println(String.format("Labirynt (%s) został załadowany", selectedFile.getName()));
                             break;
                         case BAD_DIMS:
                             System.out.println("Złe wymiary!");
@@ -152,6 +178,7 @@ public class MainWindow extends JFrame {
         setStartButton.setIcon(new ImageIcon("./assets/startbtn.png"));
         setEndButton.setIcon(new ImageIcon("./assets/endbtn.png"));
         removeButton.setIcon(new ImageIcon("./assets/removebtn.png"));
+
         removeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
