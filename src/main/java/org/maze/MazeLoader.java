@@ -26,7 +26,6 @@ public class MazeLoader {
 
         try(BufferedReader br = new BufferedReader(new FileReader(in))) {
             for(String line; (line = br.readLine()) != null; ) {
-                // process the line.
                 if ( width == -1)
                     width = line.length();
                 else if ( width != line.length() )

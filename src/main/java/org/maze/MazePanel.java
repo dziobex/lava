@@ -1,9 +1,12 @@
 package org.maze;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class MazePanel extends JPanel {
     private Maze maze;
@@ -21,6 +24,11 @@ public class MazePanel extends JPanel {
 
         setLayout(new BorderLayout());
         createSnapshot();
+    }
+
+    public void save(File saveTo) throws IOException {
+        if ( mazeImage != null )
+            ImageIO.write(mazeImage, "PNG", saveTo);
     }
 
     void createSnapshot() {

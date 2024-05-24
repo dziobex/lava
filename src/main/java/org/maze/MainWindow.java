@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -182,6 +183,32 @@ public class MainWindow extends JFrame {
                     }
 
                     updateMaze();
+                }
+            }
+        });
+
+        saveImageItem.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent ae) {
+                JFileChooser fileChooser = new JFileChooser();
+
+                fileChooser.setCurrentDirectory(
+                        new File("./samples")
+                );
+                fileChooser.setFileFilter(
+                        new FileNameExtensionFilter("PNG files", "png")
+                );
+                int returnValue = fileChooser.showSaveDialog(null);
+
+                if (returnValue == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+
+                    try {
+                        mazePanel.save(selectedFile);
+                    } catch (IOException e) {
+                        System.out.println("Nie udało się zapisać");
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         });
