@@ -1,26 +1,22 @@
 package org.maze;
 
-import javax.swing.*;
 import java.awt.*;
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
-public class MazeLoader {
-    public static enum LoadResult {
-        SUCCESS,
-        BAD_DIMS,
-        ILLEGAL_DIMS,
-        BAD_CHARS
-    };
-
+public class TextLoader implements Loader {
     private Maze maze;
 
-    public MazeLoader() {
-        maze = null;
+    public TextLoader() {
+        this.maze = null;
     }
 
-    public LoadResult LoadText(File in) {
+    @Override
+    public Loader.LoadResult Load(File in) {
         int width = -1, height = 0;
         List<String> lines = new ArrayList<String>();
 
@@ -56,15 +52,17 @@ public class MazeLoader {
                 else if ( getChar == ' ' || getChar == 'X' )
                     mazeData[y][x] = getChar == ' ' ? 0 : 1;
                 else
-                    return LoadResult.BAD_CHARS;
+                    return LoadResult.BAD_CHARS; // no recognizable characters
             }
         }
 
         this.maze = new Maze(mazeData, width, height, startPos, endPos);
 
-        //System.out.println(String.format("%d, %d", width, height));
         return LoadResult.SUCCESS;
     }
 
-    public Maze GetMaze() { return this.maze; }
+    @Override
+    public Maze GetMaze() {
+        return this.maze;
+    }
 }

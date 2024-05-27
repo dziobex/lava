@@ -20,7 +20,7 @@ public class MainWindow extends JFrame {
     private JButton solveButton, setStartButton, setEndButton, removeButton;
     private JLabel fillingLabel;
     private JButton clearSolutionButton;
-    public static MazeLoader loader = null;
+    public static Loader loader = null;
 
     boolean setStart, setEnd;
 
@@ -152,6 +152,53 @@ public class MainWindow extends JFrame {
         saveItem.add(saveImageItem);
         bar.add(saveItem);
 
+        openBinaryItem.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent ae) {
+                JFileChooser fileChooser = new JFileChooser();
+
+                fileChooser.setCurrentDirectory(
+                        new File("./samples")
+                );
+                fileChooser.setFileFilter(
+                        new FileNameExtensionFilter("BINARY FILES", "bin")
+                );
+
+                int returnValue = fileChooser.showOpenDialog(null);
+
+                if (returnValue == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+
+                    loader = LoaderFactory.CreateLoader(LoaderFactory.LoadType.BINARY);
+                    Loader.LoadResult loadResult = loader.Load(selectedFile);
+
+                    switch (loadResult) {
+                        case SUCCESS:
+                            System.out.println(String.format("Labirynt (%s) został załadowany", selectedFile.getName()));
+                            break;
+                        case BAD_DIMS:
+                            System.out.println("Uszkodzone wymiary!");
+                            JOptionPane.showMessageDialog(null, "Złe wymiary labiryntu!", "O nie!", JOptionPane.WARNING_MESSAGE);
+                            break;
+                        case BAD_CHARS:
+                            System.out.println("Złe znaki!");
+                            break;
+                        case ILLEGAL_DIMS:
+                            System.out.println("ZŁE wymiary!");
+                            break;
+                        case INVALID_STRUCT:
+                            System.out.println("Niepoprawna struktura!");
+                            break;
+                        default:
+                            System.out.println("哎呀!");
+                            return;
+                    }
+
+                    updateMaze();
+                }
+            }
+        });
+
         openTextItem.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent ae) {
@@ -168,8 +215,8 @@ public class MainWindow extends JFrame {
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
 
-                    loader = new MazeLoader();
-                    MazeLoader.LoadResult loadResult = loader.LoadText(selectedFile);
+                    loader = LoaderFactory.CreateLoader(LoaderFactory.LoadType.TEXT);
+                    Loader.LoadResult loadResult = loader.Load(selectedFile);
 
                     switch (loadResult) {
                         case SUCCESS:
