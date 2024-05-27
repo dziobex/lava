@@ -9,10 +9,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 public class BinaryLoader implements Loader {
-    private Maze maze;
 
     public BinaryLoader() {
-        this.maze = null;
     }
 
     @Override
@@ -72,14 +70,11 @@ public class BinaryLoader implements Loader {
                 }
             }
 
-            this.maze = new Maze(newMaze, columns, rows, new Point(entryX - 1, entryY - 1), new Point(exitX - 1, exitY - 1));
+            Maze.getInstance().NewData(newMaze, columns, rows, new Point(entryX - 1, entryY - 1), new Point(exitX - 1, exitY - 1));
 
             return LoadResult.SUCCESS;
         } catch (IOException e) {
             return LoadResult.INVALID_STRUCT;
         }
     }
-
-    @Override
-    public Maze GetMaze() { return this.maze; }
 }

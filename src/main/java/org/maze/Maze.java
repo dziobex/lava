@@ -9,23 +9,38 @@ import java.util.Queue;
 /* maybe singleton? need to check */
 
 public class Maze {
+    private static Maze mazeObject = null;
+
+    boolean isEmpty;
     int[][] maze;
     int width, height;
     Point start, end;
 
-    public Maze(int[][] maze, int width, int height) {
+    private Maze() {
+        isEmpty = true;
+    }
+
+    public static Maze getInstance() {
+        if ( mazeObject == null)
+            mazeObject = new Maze();
+        return mazeObject;
+    }
+
+    public void NewData(int[][] maze, int width, int height, Point start, Point end) {
         this.maze = maze;
         this.width = width;
         this.height = height;
-        this.start = null;
-        this.end = null;
-    }
-
-    public Maze(int[][] maze, int width, int height, Point start, Point end) {
-        this(maze, width, height);
         this.start = start;
         this.end = end;
+
+        isEmpty = false;
     }
+
+    public void Reset() {
+        mazeObject = null;
+    }
+
+    public boolean IsEmpty() { return this.isEmpty; }
 
     public int getCell(int x, int y) { return this.maze[y][x]; }
 

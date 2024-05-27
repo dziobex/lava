@@ -56,13 +56,9 @@ public class TextLoader implements Loader {
             }
         }
 
-        this.maze = new Maze(mazeData, width, height, startPos, endPos);
+        Maze.getInstance().NewData(mazeData, width, height, startPos, endPos);
 
         return LoadResult.SUCCESS;
     }
 
-    @Override
-    public Maze GetMaze() {
-        return this.maze;
-    }
 }

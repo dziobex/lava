@@ -66,7 +66,7 @@ public class MainWindow extends JFrame {
         solveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                mazePanel.getMaze().solveMaze();
+                Maze.getInstance().solveMaze();
                 mazePanel.refresh();
             }
         });
@@ -74,7 +74,7 @@ public class MainWindow extends JFrame {
         clearSolutionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                mazePanel.getMaze().clearPath();
+                Maze.getInstance().clearPath();
                 mazePanel.refresh();
             }
         });
@@ -83,9 +83,9 @@ public class MainWindow extends JFrame {
     }
 
     void updateMaze() {
-        if ( loader == null || loader.GetMaze() == null )
+        if ( loader == null || Maze.getInstance().IsEmpty() )
             return;
-        mazePanel = new MazePanel(loader.GetMaze());
+        mazePanel = new MazePanel();
         mazeScrollPane.setViewportView(mazePanel);
         mazeScrollPane.setPreferredSize(mazePanel.getPreferredSize());
         mazePanel.addMouseListener(new MouseAdapter() {
@@ -100,18 +100,18 @@ public class MainWindow extends JFrame {
 
                 //System.out.println(String.format("%s: x is %d and y is %d", location, xypos.x, xypos.y));
 
-                if ( setStart && xypos.x < mazePanel.getMaze().getWidth() && xypos.y < mazePanel.getMaze().getHeight()
-                        && (mazePanel.getMaze().getEndLocation() == null ||
-                        (mazePanel.getMaze().getEndLocation().x != xypos.x
-                        || mazePanel.getMaze().getEndLocation().y != xypos.y))) {
+                if ( setStart && xypos.x < Maze.getInstance().getWidth() && xypos.y < Maze.getInstance().getHeight()
+                        && (Maze.getInstance().getEndLocation() == null ||
+                        (Maze.getInstance().getEndLocation().x != xypos.x
+                        || Maze.getInstance().getEndLocation().y != xypos.y))) {
 
                     System.out.println("New start");
                     mazePanel.setStartLocation(xypos);
                 }
-                else if ( setEnd && xypos.x < mazePanel.getMaze().getWidth() && xypos.y < mazePanel.getMaze().getHeight()
-                        && (mazePanel.getMaze().getStartLocation() == null ||
-                        (mazePanel.getMaze().getStartLocation().x != xypos.x
-                                || mazePanel.getMaze().getStartLocation().y != xypos.y))) {
+                else if ( setEnd && xypos.x < Maze.getInstance().getWidth() && xypos.y < Maze.getInstance().getHeight()
+                        && (Maze.getInstance().getStartLocation() == null ||
+                        (Maze.getInstance().getStartLocation().x != xypos.x
+                                || Maze.getInstance().getStartLocation().y != xypos.y))) {
 
                     System.out.println("New end");
                     mazePanel.setEndLocation(xypos);

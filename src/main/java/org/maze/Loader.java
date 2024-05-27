@@ -11,5 +11,4 @@ public interface Loader {
     };
 
     public LoadResult Load(File in);
-    public Maze GetMaze();
 }
