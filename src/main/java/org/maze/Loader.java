@@ -6,7 +6,6 @@ public interface Loader {
     public static enum LoadResult {
         SUCCESS,
         BAD_DIMS,
-        ILLEGAL_DIMS,
         BAD_CHARS,
         INVALID_STRUCT
     };

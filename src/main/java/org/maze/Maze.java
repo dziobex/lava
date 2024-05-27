@@ -6,10 +6,11 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 /* keeps and provides given maze [structure] */
-public class Maze {
-    private int[][] maze;
-    private int width, height;
+/* maybe singleton? need to check */
 
+public class Maze {
+    int[][] maze;
+    int width, height;
     Point start, end;
 
     public Maze(int[][] maze, int width, int height) {
@@ -21,38 +22,31 @@ public class Maze {
     }
 
     public Maze(int[][] maze, int width, int height, Point start, Point end) {
-        this.maze = maze;
-        this.width = width;
-        this.height = height;
+        this(maze, width, height);
         this.start = start;
         this.end = end;
     }
 
-    public int getCell(int x, int y) {
-        return this.maze[y][x];
-    }
+    public int getCell(int x, int y) { return this.maze[y][x]; }
 
-    public int getWidth() {
-        return this.width;
-    }
-
+    public int getWidth() { return this.width; }
     public int getHeight() { return this.height; }
 
     public Point getStartLocation() { return this.start; }
     public Point getEndLocation() { return this.end; }
+
     public void setStartLocation(Point newStartLocation) { this.start = newStartLocation; }
     public void setEndLocation(Point newEndLocation) { this.end = newEndLocation; }
 
     public void clearPath() {
-        for ( int y = 0; y < height; ++y ) {
-            for ( int x = 0; x < width; ++x ) {
-                if ( maze[y][x] == 3)
+        for ( int y = 0; y < height; ++y )
+            for ( int x = 0; x < width; ++x )
+                if ( maze[y][x] == 3 )
                     maze[y][x] = 0;
-            }
-        }
     }
 
-    /* SOLVE MODULES */
+    /* SOLVING MODULES */
+
     public void solveMaze() {
         // delete all the path from the maze
         clearPath();
@@ -65,6 +59,8 @@ public class Maze {
             System.out.println("No path found.");
         }
     }
+
+    // change to A* / J* if you want
 
     private boolean bfs() {
         int rows = height;
@@ -92,22 +88,23 @@ public class Maze {
                 int newX = currX + dir[0];
                 int newY = currY + dir[1];
 
-                if ((newX == end.x && newY == end.y) || isValidMove(newX, newY, rows, cols, visited)) {
+                if ( isValidMove(newX, newY, rows, cols, visited) ) {
                     queue.add(new Point(newX, newY));
                     visited[newY][newX] = true;
                     parent[newY][newX] = current;
                 }
             }
         }
+
         return false;
     }
 
     private boolean isValidMove(int x, int y, int rows, int cols, boolean[][] visited) {
-        return x >= 0 && x < cols && y >= 0 && y < rows && maze[y][x] == 0 && !visited[y][x];
+        return (x == end.x && y == end.y) || (x >= 0 && x < cols && y >= 0 && y < rows && maze[y][x] == 0 && !visited[y][x]);
     }
 
     private void markPath(Point[][] parent, int x, int y) {
-        while (!(x == start.x && y == start.y)) {
+        while ( !(x == start.x && y == start.y) ) {
             maze[y][x] = 3;
             Point p = parent[y][x];
             x = p.x;

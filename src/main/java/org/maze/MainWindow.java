@@ -20,15 +20,14 @@ public class MainWindow extends JFrame {
     private JButton solveButton, setStartButton, setEndButton, removeButton;
     private JLabel fillingLabel;
     private JButton clearSolutionButton;
-    public static Loader loader = null;
 
+    public static Loader loader = null;
     boolean setStart, setEnd;
 
     public MainWindow() {
         this.setStart = this.setEnd = false;
 
         setTitle("Lava - LAbirynth in jaVA");
-        setIconImage(new ImageIcon("./assets/favicon.png").getImage());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setSize(800, 600);
@@ -71,6 +70,7 @@ public class MainWindow extends JFrame {
                 mazePanel.refresh();
             }
         });
+
         clearSolutionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -78,6 +78,8 @@ public class MainWindow extends JFrame {
                 mazePanel.refresh();
             }
         });
+
+        niceLookSetup();
     }
 
     void updateMaze() {
@@ -120,32 +122,21 @@ public class MainWindow extends JFrame {
 
     void menuBarSetup() {
         bar = new JMenuBar();
-        bar.setFont(solveButton.getFont());
+
+        /* here is the composite pattern? */
 
         openItem = new JMenu("Open From");
-        openItem.setFont(solveButton.getFont());
-
         openTextItem = new JMenuItem("text");
-        openTextItem.setFont(solveButton.getFont());
-
         openBinaryItem = new JMenuItem("binary");
-        openBinaryItem.setFont(solveButton.getFont());
 
         openItem.add(openTextItem);
         openItem.add(openBinaryItem);
         bar.add(openItem);
 
         saveItem = new JMenu("Save As");
-        saveItem.setFont(solveButton.getFont());
-
         saveTextItem = new JMenuItem("text");
-        saveTextItem.setFont(solveButton.getFont());
-
         saveBinaryItem = new JMenuItem("binary");
-        saveBinaryItem.setFont(solveButton.getFont());
-
         saveImageItem = new JMenuItem("image");
-        saveImageItem.setFont(solveButton.getFont());
 
         saveItem.add(saveTextItem);
         saveItem.add(saveBinaryItem);
@@ -153,123 +144,64 @@ public class MainWindow extends JFrame {
         bar.add(saveItem);
 
         openBinaryItem.addActionListener(new ActionListener() {
-
             public void actionPerformed(ActionEvent ae) {
-                JFileChooser fileChooser = new JFileChooser();
-
-                fileChooser.setCurrentDirectory(
-                        new File("./samples")
-                );
-                fileChooser.setFileFilter(
-                        new FileNameExtensionFilter("BINARY FILES", "bin")
-                );
-
-                int returnValue = fileChooser.showOpenDialog(null);
-
-                if (returnValue == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = fileChooser.getSelectedFile();
-
-                    loader = LoaderFactory.CreateLoader(LoaderFactory.LoadType.BINARY);
-                    Loader.LoadResult loadResult = loader.Load(selectedFile);
-
-                    switch (loadResult) {
-                        case SUCCESS:
-                            System.out.println(String.format("Labirynt (%s) został załadowany", selectedFile.getName()));
-                            break;
-                        case BAD_DIMS:
-                            System.out.println("Uszkodzone wymiary!");
-                            JOptionPane.showMessageDialog(null, "Złe wymiary labiryntu!", "O nie!", JOptionPane.WARNING_MESSAGE);
-                            break;
-                        case BAD_CHARS:
-                            System.out.println("Złe znaki!");
-                            break;
-                        case ILLEGAL_DIMS:
-                            System.out.println("ZŁE wymiary!");
-                            break;
-                        case INVALID_STRUCT:
-                            System.out.println("Niepoprawna struktura!");
-                            break;
-                        default:
-                            System.out.println("哎呀!");
-                            return;
-                    }
-
-                    updateMaze();
-                }
+                openFilePattern(LoaderFactory.LoadType.BINARY);
             }
         });
 
         openTextItem.addActionListener(new ActionListener() {
-
             public void actionPerformed(ActionEvent ae) {
-                JFileChooser fileChooser = new JFileChooser();
-
-                fileChooser.setCurrentDirectory(
-                        new File("./samples")
-                );
-                fileChooser.setFileFilter(
-                        new FileNameExtensionFilter("TEXT FILES", "txt")
-                );
-                int returnValue = fileChooser.showOpenDialog(null);
-
-                if (returnValue == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = fileChooser.getSelectedFile();
-
-                    loader = LoaderFactory.CreateLoader(LoaderFactory.LoadType.TEXT);
-                    Loader.LoadResult loadResult = loader.Load(selectedFile);
-
-                    switch (loadResult) {
-                        case SUCCESS:
-                            System.out.println(String.format("Labirynt (%s) został załadowany", selectedFile.getName()));
-                            break;
-                        case BAD_DIMS:
-                            System.out.println("Złe wymiary!");
-                            JOptionPane.showMessageDialog(null, "Złe wymiary labiryntu!", "O nie!", JOptionPane.WARNING_MESSAGE);
-                            break;
-                        default: return;
-                    }
-
-                    updateMaze();
-                }
+                openFilePattern(LoaderFactory.LoadType.TEXT);
             }
         });
 
         saveImageItem.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent ae) {
-                JFileChooser fileChooser = new JFileChooser();
-
-                fileChooser.setCurrentDirectory(
-                        new File("./samples")
-                );
-                fileChooser.setFileFilter(
-                        new FileNameExtensionFilter("PNG files", "png")
-                );
-                int returnValue = fileChooser.showSaveDialog(null);
-
-                if (returnValue == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = fileChooser.getSelectedFile();
-
-                    try {
-                        mazePanel.save(selectedFile);
-                    } catch (IOException e) {
-                        System.out.println("Nie udało się zapisać");
-                        throw new RuntimeException(e);
-                    }
-                }
+                openFilePattern(LoaderFactory.LoadType.IMAGE);
             }
         });
 
         setJMenuBar(bar);
     }
 
-    void toolPanelSetup() {
-        solveButton.setIcon(new ImageIcon("./assets/solvebtn.png"));
-        setStartButton.setIcon(new ImageIcon("./assets/startbtn.png"));
-        setEndButton.setIcon(new ImageIcon("./assets/endbtn.png"));
-        clearSolutionButton.setIcon(new ImageIcon("./assets/clearbtn.png"));
-        removeButton.setIcon(new ImageIcon("./assets/removebtn.png"));
+    void openFilePattern(LoaderFactory.LoadType type) {
+        JFileChooser fileChooser = new JFileChooser();
 
+        fileChooser.setCurrentDirectory( new File("./samples") );
+        fileChooser.setFileFilter( new FileNameExtensionFilter(type + " FILES",
+                type == LoaderFactory.LoadType.TEXT ? "txt" : type == LoaderFactory.LoadType.BINARY ? "bin" : "PNG") );
+
+        if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+
+            loader = LoaderFactory.CreateLoader(type);
+            Loader.LoadResult loadResult = loader.Load(selectedFile);
+
+            switch (loadResult) {
+                default:
+                case SUCCESS:
+                    System.out.println(String.format("Labirynt (%s) został załadowany", selectedFile.getName()));
+                    break;
+                case BAD_DIMS:
+                    System.out.println("Złe wymiary!");
+                    JOptionPane.showMessageDialog(null, "Złe wymiary labiryntu!", "O nie!", JOptionPane.WARNING_MESSAGE);
+                    break;
+                case BAD_CHARS:
+                    System.out.println("Złe znaki!");
+                    JOptionPane.showMessageDialog(null, "Użyto nieprawidłowych znaków!", "O nie!", JOptionPane.WARNING_MESSAGE);
+                    break;
+                case INVALID_STRUCT:
+                    System.out.println("Niepoprawna struktura!");
+                    JOptionPane.showMessageDialog(null, "Zła struktura pliku!", "O nie!", JOptionPane.WARNING_MESSAGE);
+                    break;
+            }
+
+            updateMaze();
+        }
+    }
+
+    void toolPanelSetup() {
         removeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -284,5 +216,25 @@ public class MainWindow extends JFrame {
                 }
             }
         });
+    }
+
+    // setting icons, fonts etc (kinda useless) stuff
+    void niceLookSetup() {
+        Font myFont = new Font("Artifakt Element", Font.BOLD, 13);
+        UIDefaults defaultUI = UIManager.getDefaults();
+        defaultUI.put("Button.font", myFont);
+        defaultUI.put("Label.font", myFont);
+        defaultUI.put("Menu.font", myFont);
+        defaultUI.put("MenuItem.font", myFont);
+        defaultUI.put("TextArea.font", myFont);
+        defaultUI.put("Table.font", myFont);
+        defaultUI.put("List.font", myFont);
+
+        setIconImage(new ImageIcon("./assets/favicon.png").getImage());
+        solveButton.setIcon(new ImageIcon("./assets/solvebtn.png"));
+        setStartButton.setIcon(new ImageIcon("./assets/startbtn.png"));
+        setEndButton.setIcon(new ImageIcon("./assets/endbtn.png"));
+        clearSolutionButton.setIcon(new ImageIcon("./assets/clearbtn.png"));
+        removeButton.setIcon(new ImageIcon("./assets/removebtn.png"));
     }
 }

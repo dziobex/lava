@@ -2,21 +2,18 @@ package org.maze;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
 public class MazePanel extends JPanel {
-    private Maze maze;
-    private BufferedImage mazeImage;
+    Maze maze;
+    BufferedImage mazeImage;
     public static int cellSize = 10;
 
     public MazePanel(Maze maze) {
         this.maze = maze;
 
-        // adjust the cell size
         cellSize = 10;
         while ( this.maze.getWidth() * (cellSize + 1) <= 600 && this.maze.getHeight() * (cellSize + 1) <= 535) {
             ++cellSize;
