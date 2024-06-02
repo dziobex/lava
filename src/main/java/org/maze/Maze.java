@@ -15,6 +15,7 @@ public class Maze {
     int[][] maze;
     int width, height;
     Point start, end;
+    Point[][] parent;
 
     private Maze() {
         isEmpty = true;
@@ -32,6 +33,7 @@ public class Maze {
         this.height = height;
         this.start = start;
         this.end = end;
+        this.parent = new Point[height][width];
 
         isEmpty = false;
     }
@@ -81,7 +83,7 @@ public class Maze {
         int rows = height;
         int cols = width;
         boolean[][] visited = new boolean[rows][cols];
-        Point[][] parent = new Point[rows][cols];
+        //Point[][] parent = new Point[rows][cols];
 
         Queue<Point> queue = new LinkedList<>();
         queue.add(start);

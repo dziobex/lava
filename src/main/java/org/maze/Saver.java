@@ -5,6 +5,7 @@ import java.io.File;
 public interface Saver {
     public static enum SaveResult {
         SUCCESS,
+        NO_MAZE,
         NO_SPACE,
         BAD_FORMAT,
         NONSPECIFIC_FAILURE

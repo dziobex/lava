@@ -11,7 +11,7 @@ public class SaverFactory {
         switch (type) {
             default:
             case TEXT: return new TextSaver();
-            //case BINARY: return new BinarySaver();
+            case BINARY: return new BinarySaver();
         }
     }
 }

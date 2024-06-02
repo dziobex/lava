@@ -22,6 +22,7 @@ public class MainWindow extends JFrame {
     private JButton clearSolutionButton;
 
     public static Loader loader = null;
+    public static Saver saver = null;
     boolean setStart, setEnd;
 
     public MainWindow() {
@@ -155,6 +156,18 @@ public class MainWindow extends JFrame {
             }
         });
 
+        saveTextItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                makeFilePattern(SaverFactory.SaveType.TEXT);
+            }
+        });
+
+        saveBinaryItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                makeFilePattern(SaverFactory.SaveType.BINARY);
+            }
+        });
+
         saveImageItem.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent ae) {
@@ -194,6 +207,39 @@ public class MainWindow extends JFrame {
                 case INVALID_STRUCT:
                     System.out.println("Niepoprawna struktura!");
                     JOptionPane.showMessageDialog(null, "Zła struktura pliku!", "O nie!", JOptionPane.WARNING_MESSAGE);
+                    break;
+            }
+
+            updateMaze();
+        }
+    }
+
+    void makeFilePattern(SaverFactory.SaveType type) {
+        JFileChooser fileChooser = new JFileChooser();
+        String extension = type == SaverFactory.SaveType.TEXT ? "txt" : type == SaverFactory.SaveType.BINARY ? "bin" : "png";
+
+        fileChooser.setCurrentDirectory( new File("./solutions") );
+        fileChooser.setFileFilter( new FileNameExtensionFilter(type + " FILES",
+                extension) );
+
+        if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = new File(fileChooser.getCurrentDirectory().getName() + '/' + fileChooser.getSelectedFile().getName() + "." + extension);
+
+            saver = SaverFactory.CreateSaver(type);
+            Saver.SaveResult saveResult = saver.Save(selectedFile);
+
+            switch (saveResult) {
+                default:
+                case SUCCESS:
+                    System.out.println(String.format("Zapisano ścieżkę do pliku (%s)", selectedFile.getName()));
+                    break;
+                case NO_MAZE:
+                    System.out.println("Brak labiryntu!");
+                    JOptionPane.showMessageDialog(null, "Nie ma załadowanego labiryntu!", "O nie!", JOptionPane.WARNING_MESSAGE);
+                    break;
+                case NO_SPACE:
+                    System.out.println("Problemy z plikiem!");
+                    JOptionPane.showMessageDialog(null, "Nie udało się stworzyć lub otworzyć pliku!", "O nie!", JOptionPane.WARNING_MESSAGE);
                     break;
             }
 
