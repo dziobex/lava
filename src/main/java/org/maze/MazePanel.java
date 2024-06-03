@@ -23,9 +23,15 @@ public class MazePanel extends JPanel {
         createSnapshot();
     }
 
-    public void save(File saveTo) throws IOException {
-        if ( MazeImage != null )
-            ImageIO.write(MazeImage, "PNG", saveTo);
+    public void save(File saveTo) {
+        try {
+            if (MazeImage != null) {
+                ImageIO.write(MazeImage, "PNG", saveTo);
+                JOptionPane.showMessageDialog(null, "Zapisano labirynt!", "Hura!", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     void createSnapshot() {

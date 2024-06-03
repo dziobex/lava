@@ -169,9 +169,8 @@ public class MainWindow extends JFrame {
         });
 
         saveImageItem.addActionListener(new ActionListener() {
-
             public void actionPerformed(ActionEvent ae) {
-                openFilePattern(LoaderFactory.LoadType.IMAGE);
+                makeFilePattern(SaverFactory.SaveType.IMAGE);
             }
         });
 
@@ -225,22 +224,27 @@ public class MainWindow extends JFrame {
         if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             File selectedFile = new File(fileChooser.getCurrentDirectory().getName() + '/' + fileChooser.getSelectedFile().getName() + "." + extension);
 
-            saver = SaverFactory.CreateSaver(type);
-            Saver.SaveResult saveResult = saver.Save(selectedFile);
+            if ( type == SaverFactory.SaveType.IMAGE ) {
+                mazePanel.save(selectedFile);
+            }
+            else {
+                saver = SaverFactory.CreateSaver(type);
+                Saver.SaveResult saveResult = saver.Save(selectedFile);
 
-            switch (saveResult) {
-                default:
-                case SUCCESS:
-                    System.out.println(String.format("Zapisano ścieżkę do pliku (%s)", selectedFile.getName()));
-                    break;
-                case NO_MAZE:
-                    System.out.println("Brak labiryntu!");
-                    JOptionPane.showMessageDialog(null, "Nie ma załadowanego labiryntu!", "O nie!", JOptionPane.WARNING_MESSAGE);
-                    break;
-                case NO_SPACE:
-                    System.out.println("Problemy z plikiem!");
-                    JOptionPane.showMessageDialog(null, "Nie udało się stworzyć lub otworzyć pliku!", "O nie!", JOptionPane.WARNING_MESSAGE);
-                    break;
+                switch (saveResult) {
+                    default:
+                    case SUCCESS:
+                        System.out.println(String.format("Zapisano ścieżkę do pliku (%s)", selectedFile.getName()));
+                        break;
+                    case NO_MAZE:
+                        System.out.println("Brak labiryntu!");
+                        JOptionPane.showMessageDialog(null, "Nie ma załadowanego labiryntu!", "O nie!", JOptionPane.WARNING_MESSAGE);
+                        break;
+                    case NO_SPACE:
+                        System.out.println("Problemy z plikiem!");
+                        JOptionPane.showMessageDialog(null, "Nie udało się stworzyć lub otworzyć pliku!", "O nie!", JOptionPane.WARNING_MESSAGE);
+                        break;
+                }
             }
 
             updateMaze();
